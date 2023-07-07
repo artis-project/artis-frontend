@@ -13,7 +13,7 @@
 }
 
 .title a {
-  color: #f2b713;
+  color: #f213a4;
   text-decoration: none;
 }
 
@@ -36,7 +36,8 @@
 
 .connect {
   margin-bottom: 2rem;
-  width: 230px;
+  display: flex;
+  justify-content: center;
 }
 
 .description {
