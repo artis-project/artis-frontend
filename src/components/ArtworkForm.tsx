@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { Button, FormGroup, HTMLSelect, InputGroup, Intent, Tag } from '@blueprintjs/core';
-import { ArtworkData } from '../types/ArtworkData';
+import { ArtworkData, ArtworkDataProperties } from '../types/ArtworkData';
 
 export interface FormGroupProps {
   helperText: boolean;
@@ -15,10 +15,11 @@ export enum ArtworkFormField {
 }
 
 interface ArtworkFormProps {
-  title: string;
-  description: string;
-  visibleFields: ArtworkFormField[] | undefined;
-  requiredFields: ArtworkFormField[] | undefined;
+  title?: string;
+  description?: string;
+  visibleFields?: ArtworkFormField[];
+  requiredFields?: ArtworkFormField[];
+  readOnlyFields?: ArtworkFormField[];
   onSubmit: (artworkData: ArtworkData) => void;
   onCancel: () => void;
 }
@@ -32,21 +33,7 @@ interface ActorFormProps {
 }
 
 export const ArtworkForm = (props: ArtworkFormProps) => {
-  const [artworkData, setArtworkData] = useState<ArtworkData>({
-    id: 0,
-    owner: '',
-    objectId: '',
-    status: {
-      approvals: {
-        carrier: false,
-        owner: false,
-        recipient: false,
-      },
-      currentStatus: '',
-      requestedStatus: '',
-    },
-    violationTimestamp: 0,
-  });
+  const [artworkData, setArtworkData] = useState<ArtworkDataProperties>({});
 
   const [objectIdProps, setObjectIdProps] = useState<FormGroupProps>({
     intent: Intent.NONE,
@@ -127,6 +114,9 @@ export const ArtworkForm = (props: ArtworkFormProps) => {
     return false;
   };
   const checkRequired = (field: ArtworkFormField): [string, boolean] => {
+    if(props.readOnlyFields?.includes(field)){
+      return ["", false]
+    }
     if (props.requiredFields == undefined) {
       return ['(optional)', false];
     }
@@ -136,86 +126,81 @@ export const ArtworkForm = (props: ArtworkFormProps) => {
     return ['(optional)', false];
   };
 
+  const checkReadonly = (field: ArtworkFormField) => {
+    if (props.readOnlyFields == undefined) {
+      return false;
+    }
+    if (props.readOnlyFields.includes(field)) {
+      return true;
+    }
+    return false;
+  };
+
   return (
-    <div className="fixed top-0 left-0 w-full h-full bg-sky-500 bg-opacity-50 flex justify-center items-center">
-      <div className="bg-slate-800 rounded-lg p-8">
-        <h2 className="text-lg font-medium pb-4">{props.title}</h2>
-        <p className="font-light pb-3">{props.description}</p>
-        {/* Object ID Field */}
-        {checkVisible(ArtworkFormField.objectId) && (
-          <FormGroup
-            helperText={objectIdProps.helperText && 'Must be a valid ICOM ObjectId (e.g. MET-1234)'}
-            inline={false}
+    <div>
+      {props.title && <h2 className="text-lg font-medium pb-4">{props.title}</h2>}
+      { props.description && <p className="font-light pb-3">{props.description}</p>}
+      {/* Object ID Field */}
+      {checkVisible(ArtworkFormField.objectId) && (
+        <FormGroup
+          helperText={objectIdProps.helperText && 'Must be a valid ICOM ObjectId (e.g. MET-1234)'}
+          inline={false}
+          intent={objectIdProps.intent}
+          label="Object Id"
+          labelFor="objectId"
+          labelInfo={checkRequired(ArtworkFormField.objectId)[0]}
+        >
+          <InputGroup
+            type="text"
+            id="objectId"
+            required={checkRequired(ArtworkFormField.objectId)[1]}
             intent={objectIdProps.intent}
-            label="Object Id"
-            labelFor="objectId"
-            labelInfo={checkRequired(ArtworkFormField.objectId)[0]}
-          >
-            <InputGroup
-              type="text"
-              id="objectId"
-              required={checkRequired(ArtworkFormField.objectId)[1]}
-              intent={objectIdProps.intent}
-              onChange={handleObjectId}
-            />
-          </FormGroup>
-        )}
-        {/* Actors Field */}
-        {checkVisible(ArtworkFormField.actors) && (
-          <FormGroup
-            label="Actors"
-            helperText={actorsProps.helperText && 'Must be a valid ethereum address 0x...'}
-            intent={actorsProps.intent}
-            labelFor="actors"
-            labelInfo={checkRequired(ArtworkFormField.actors)[0]}
-          >
-            <div className="space-y-2">
-              {['logger', 'recipient', 'carrier'].map((actor) => (
-                <InputGroup
-                  key={actor}
-                  type="text"
-                  leftElement={
-                    <Tag round={true} minimal={true} intent={actorsProps[actor].intent}>
-                      {actor}
-                    </Tag>
-                  }
-                  id={actor}
-                  onChange={(e) => handleActor(e, actor)}
-                />
-              ))}
-            </div>
-          </FormGroup>
-        )}
-        {/* Status Field */}
-        {checkVisible(ArtworkFormField.status) && (
-          <FormGroup label="Status" labelFor="status" labelInfo={checkRequired(ArtworkFormField.status)[0]}>
-            <HTMLSelect
-              id="status"
-              required={checkRequired(ArtworkFormField.status)[1]}
-              options={['select option', 'IN_TRANSIT', 'TO_BE_DELIVERED', 'DELIVERED']}
-              onChange={(e) =>
-                setArtworkData((prev) => ({ ...prev, status: { ...prev.status, requestedStatus: e.target.value } }))
-              }
-            />
-          </FormGroup>
-        )}
-        <div className="space-y-3">
-          {/* Submit */}
-          <Button
-            minimal={false}
-            intent={Intent.PRIMARY}
-            fill={true}
-            disabled={handleSubmit()}
-            outlined={false}
-            onClick={(e) => props.onSubmit(artworkData)}
-          >
-            Mint
-          </Button>
-          {/* Cancel */}
-          <Button intent={Intent.DANGER} fill={true} minimal={true} outlined={true} onClick={(e) => props.onCancel()}>
-            Cancel
-          </Button>
-        </div>
+            onChange={handleObjectId}
+          />
+        </FormGroup>
+      )}
+      {/* Actors Field */}
+      {checkVisible(ArtworkFormField.actors) && (
+        <FormGroup
+          label="Actors"
+          helperText={actorsProps.helperText && 'Must be a valid ethereum address 0x...'}
+          intent={actorsProps.intent}
+          labelFor="actors"
+          labelInfo={checkRequired(ArtworkFormField.actors)[0]}
+        >
+          <div className="space-y-2">
+            {['logger', 'recipient', 'carrier'].map((actor) => (
+              <InputGroup
+                key={actor}
+                type="text"
+                leftElement={
+                  <Tag round={true} minimal={true} intent={actorsProps[actor].intent}>
+                    {actor}
+                  </Tag>
+                }
+                id={actor}
+                onChange={(e) => handleActor(e, actor)}
+              />
+            ))}
+          </div>
+        </FormGroup>
+      )}
+      <div className="space-y-3">
+        {/* Submit */}
+        <Button
+          minimal={false}
+          intent={Intent.PRIMARY}
+          fill={true}
+          disabled={handleSubmit()}
+          outlined={false}
+          onClick={(e) => props.onSubmit(new ArtworkData(artworkData))}
+        >
+          Mint
+        </Button>
+        {/* Cancel */}
+        <Button intent={Intent.DANGER} fill={true} minimal={true} outlined={true} onClick={(e) => props.onCancel()}>
+          Cancel
+        </Button>
       </div>
     </div>
   );

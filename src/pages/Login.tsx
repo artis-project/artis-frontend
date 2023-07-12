@@ -1,52 +1,20 @@
-import { ConnectWallet } from "@thirdweb-dev/react";
-import "../styles/Home.css";
+import { ConnectWallet } from '@thirdweb-dev/react';
 
 export default function Login() {
   return (
-    <div className="container">
-      <main className="main">
-        <h1 className="title">
-          Welcome to <a href="https://thirdweb.com/">thirdweb</a>!
-        </h1>
+    <div className="flex flex-col justify-center items-center space-y-[5rem]">
+      <h1 className="text-8xl text-center group">
+        Welcome to <div className="tracking-widest p-4 font-bold bg-gradient-to-r from-amber-600 via-rose-600 to-violet-600 bg-clip-text text-transparent group-hover:animate-bounce">artis-project</div>
+      </h1>
 
-        <p className="description">
-          Get started by configuring your desired network in{" "}
-          <code className="code">src/main.tsx</code>, then modify the{" "}
-          <code className="code">src/App.tsx</code> file!
-        </p>
-
-        <div className="connect">
-          <ConnectWallet dropdownPosition={{
+      <div>
+        <ConnectWallet
+          dropdownPosition={{
             align: 'center',
-            side: 'bottom'
-          }} />
-        </div>
-
-        <div className="grid">
-          <a href="https://portal.thirdweb.com/" className="card">
-            <h2>Portal &rarr;</h2>
-            <p>
-              Guides, references and resources that will help you build with
-              thirdweb.
-            </p>
-          </a>
-
-          <a href="https://thirdweb.com/dashboard" className="card">
-            <h2>Dashboard &rarr;</h2>
-            <p>
-              Deploy, configure and manage your smart contracts from the
-              dashboard.
-            </p>
-          </a>
-
-          <a href="https://portal.thirdweb.com/templates" className="card">
-            <h2>Templates &rarr;</h2>
-            <p>
-              Discover and clone template projects showcasing thirdweb features.
-            </p>
-          </a>
-        </div>
-      </main>
+            side: 'bottom',
+          }}
+        />
+      </div>
     </div>
   );
 }

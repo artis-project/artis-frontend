@@ -5,6 +5,7 @@ import Artworks from "../pages/Artworks";
 import Login from "../pages/Login";
 import { HomeLayout } from "../routing/HomeLayout";
 import { ProtectedLayout } from "../routing/ProtectedLayout";
+import ErrorPage from "./ErrorPage";
 
 export const router = createBrowserRouter([
     {
@@ -25,11 +26,13 @@ export const router = createBrowserRouter([
             {
                 path: "artworks",
                 element: <Artworks />,
-                loader: api.getArtworkIds
+                loader: api.getArtworkIds,
+                errorElement: <ErrorPage />,
             },
             {
                 path: "artworks/:id",
                 element: <ArtworkDetail />,
+                errorElement: <ErrorPage />,
                 loader: async ({params}) => {
                     return await api.getArtworkById(params.id!);
                 }

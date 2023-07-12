@@ -15,10 +15,20 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
-/* a {
-  color: #7dd3fc;
-  text-decoration: none;
-} */
+/* disabling focus on readonly input fields*/
+.bp5-input:hover{
+    cursor:default;
+}
+
+.bp5-input:focus{
+  cursor:default;
+  outline:none;
+}
+
+/* due to dark theme -> text color white*/
+.bp5-switch-inner-text {
+  color:#e7e8e8
+}
 
 * {
   box-sizing: border-box;
