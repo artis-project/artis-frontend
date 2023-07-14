@@ -19,7 +19,7 @@ root.render(
       supportedWallets={[metamaskWallet()]}
       authConfig={{
         domain: "https://artis-project.github.io",
-        authUrl: process.env.ARTIS_SERVER_API,
+        authUrl: `${process.env.ARTIS_SERVER_API}/auth`,
         secureStorage: secureLocalStorage as unknown as ISecureStorage
       }}
     >
