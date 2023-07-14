@@ -30,6 +30,18 @@ body {
   color:#e7e8e8
 }
 
+.bp5-tab-list {
+  justify-content: center;
+}
+
+.bp5-tabs {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+  align-items: center;
+  width: 100%;
+}
+
 * {
   box-sizing: border-box;
 }

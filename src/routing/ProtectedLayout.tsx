@@ -7,14 +7,21 @@ export const ProtectedLayout = ({ children }: any) => {
   /* const isLoggedIn = true; */
   const navigation = useNavigation();
   const { isLoading } = useLogout();
-
   if (!isLoggedIn) {
     // user is not authenticated
     return <Navigate to="/login" />;
   }
   return (
-    <main className="min-h-screen p-16 flex flex-col justify-center items-center">
-      {navigation.state !== 'loading' && !isLoading ? <Outlet /> : <Spinner />}
-    </main>
+    <>
+      {navigation.state !== 'loading' && !isLoading ? (
+        <main className="min-h-screen p-16 flex flex-col">
+          <Outlet />
+        </main>
+      ) : (
+        <main className="min-h-screen p-16 flex flex-col justify-center items-center">
+          <Spinner />
+        </main>
+      )}
+    </>
   );
 };

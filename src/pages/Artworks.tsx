@@ -58,8 +58,8 @@ export default function Artworks() {
   }
 
   return (
-    <div className="">
-      <div className="">
+    <div className="grow flex flex-col">
+      <div>
         <Navbar className="bg-transparent p-0 shadow-none">
           <Navbar.Group align={Alignment.RIGHT}>
             <Tooltip position="top" content={'logout'} minimal={false}>
@@ -75,70 +75,77 @@ export default function Artworks() {
           </Navbar.Group>
         </Navbar>
       </div>
-      <h1 className="text-7xl pb-3">Artwork Overview</h1>
-      <Tabs id="RoleTabs" large={true}>
-        {Object.entries(artworksByRole).map(([role, ids]) => (
-          <Tab
-            className='text-slate-100'
-            id={role}
-            key={role}
-            title={role}
-            panel={
-              <div className="">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                  {ids.length !== 0 ? (
-                    ids.map((id) => (
+      <h1 className="text-7xl pb-3 text-center">Artwork Overview</h1>
+      <div className="grow flex flex-col">
+        <Tabs id="RoleTabs" className="" large={true}>
+          {Object.entries(artworksByRole).map(([role, ids]) => (
+            <Tab
+              className="text-slate-100"
+              id={role}
+              key={role}
+              title={role}
+              panelClassName="flex grow justify-center items-center grid-cols-1"
+              panel={
+                <div className="grow">
+                  <div className="grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {ids.length !== 0 ? (
+                      ids.map((id) => (
+                        <div
+                          key={id}
+                          onClick={() => navigate('/artworks/' + id, {state: {actor: role}})}
+                          className="w-60 h-60 rounded-lg shadow-lg flex justify-center items-center border-0 border-blue-400 hover:bg-gradient-to-tr from-amber-600 via-rose-600 to-violet-600"
+                          style={{ backgroundColor: generateColorCode(id) }}
+                        >
+                          <span className="text-white text-6xl font-bold">{id}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <>
+                        {role !== 'owner' && (
+                          <div className="col-span-full row-span-full">
+                            <NonIdealState
+                              className="mt-5"
+                              icon="info-sign"
+                              title="Nothing Here"
+                              description={`You have not yet been registered as a ${role}`}
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
+                    {role === 'owner' && (
                       <div
-                        key={id}
-                        onClick={() => navigate('/artworks/' + id)}
-                        className="w-60 h-60 rounded-lg shadow-lg flex justify-center items-center border-0 border-blue-400 hover:bg-gradient-to-tr from-amber-600 via-rose-600 to-violet-600"
-                        style={{ backgroundColor: generateColorCode(id) }}
+                        className="group block w-60 h-60 rounded-lg shadow-lg flex justify-center items-center border border-4 border-blue-400 hover:bg-slate-200"
+                        onClick={handleModalOpen}
                       >
-                        <span className="text-white text-6xl font-bold">{id}</span>
+                        <span className="text-white text-6xl font-bold group-hover:text-dark">+</span>
                       </div>
-                    ))
-                  ) : (
-                    <div className="col-span-full row-span-full">
-                      <NonIdealState
-                        className="mt-3"
-                        icon="info-sign"
-                        title="Nothing Here"
-                        description={`You have not yet been registered as a ${role}`}
-                      />
-                    </div>
-                  )}
-                  {role === 'owner' && (
-                    <div
-                      className="group block w-60 h-60 rounded-lg shadow-lg flex justify-center items-center border border-4 border-blue-400 hover:bg-slate-200"
-                      onClick={handleModalOpen}
-                    >
-                      <span className="text-white text-6xl font-bold group-hover:text-dark">+</span>
+                    )}
+                  </div>
+                  {isModalOpen && (
+                    <div className="fixed top-0 left-0 w-full h-full bg-sky-500 bg-opacity-50 flex justify-center items-center">
+                      <div className="bg-slate-800 rounded-lg p-8">
+                        {loading ? (
+                          <Spinner />
+                        ) : (
+                          <ArtworkForm
+                            title="Mint a new artwork NFT"
+                            description="Enter some details about your artwork:"
+                            visibleFields={[ArtworkFormField.objectId, ArtworkFormField.actors]}
+                            requiredFields={[ArtworkFormField.objectId]}
+                            onSubmit={handleModalClose}
+                            onCancel={() => setIsModalOpen(false)}
+                          />
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
-                {isModalOpen && (
-                  <div className="fixed top-0 left-0 w-full h-full bg-sky-500 bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-slate-800 rounded-lg p-8">
-                      {loading ? (
-                        <Spinner />
-                      ) : (
-                        <ArtworkForm
-                          title="Mint a new artwork NFT"
-                          description="Enter some details about your artwork:"
-                          visibleFields={[ArtworkFormField.objectId, ArtworkFormField.actors]}
-                          requiredFields={[ArtworkFormField.objectId]}
-                          onSubmit={handleModalClose}
-                          onCancel={() => setIsModalOpen(false)}
-                        />
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            }
-          />
-        ))}
-      </Tabs>
+              }
+            />
+          ))}
+        </Tabs>
+      </div>
     </div>
   );
 }
