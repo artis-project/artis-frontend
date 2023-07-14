@@ -39,4 +39,4 @@ export const router = createBrowserRouter([
             }
         ]
     }
-  ])
+  ], {basename: "/artis-frontend/"})

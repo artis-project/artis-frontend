@@ -1,6 +1,6 @@
 import { Alignment, Button, FormGroup, HTMLSelect, InputGroup, Intent, Switch, Tag } from '@blueprintjs/core';
 import { useUser } from '@thirdweb-dev/react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useLoaderData, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../artis-api/api';
 import { ArtworkData } from '../types/ArtworkData';
@@ -8,8 +8,8 @@ import { ArtworkData } from '../types/ArtworkData';
 export default function ArtworkDetail() {
   const { id } = useParams<{ id: string }>();
   const [editMode, setEditMode] = useState(false);
-  const { user } = useUser();
-  const {state } = useLocation();
+  const { user } = useUser() as { isLoading: boolean; isLoggedIn: boolean; user: { address: string } };
+  const { state } = useLocation();
   const [statusApproval, setStatusApproval] = useState(false);
   const loaderArtworkData = useLoaderData() as ArtworkData;
   const [loading, setLoading] = useState(false);
@@ -84,10 +84,12 @@ export default function ArtworkDetail() {
     <div className="flex justify-center">
       <div>
         <div className="flex justify-end w-full">
-          {state.actor && <Tag className='bg-violet-800' fill={false} round={true}>
-            {state.actor}
-          </Tag>}
-          </div>
+          {state.actor && (
+            <Tag className="bg-violet-800" fill={false} round={true}>
+              {state.actor}
+            </Tag>
+          )}
+        </div>
         <h1 className="text-7xl pb-3">Artwork Nr. {id}</h1>
         <div className="columns-1 space-y-3">
           <Tag intent={Intent.PRIMARY} fill={true} round={true}>
@@ -122,7 +124,7 @@ export default function ArtworkDetail() {
             </Tag>
           </FormGroup>
           <>
-            {(!editMode || (editMode && user.address === artworkData.owner)) && (
+            {(!editMode || (editMode && user?.address === artworkData.owner)) && (
               <div>
                 <FormGroup label="Object ID">
                   <InputGroup
