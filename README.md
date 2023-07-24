@@ -1,36 +1,27 @@
-## Getting Started
+## artis-frontend
 
-Create a project using this example:
+The project also contains a web application to interface with the API. The app is built using reactJS and is deployed on github pages under this URL [https://www.artis-project.github.io/artis-frontend/](https://www.artis-project.github.io/artis-frontend/)
+
+### Local Development
+
+to install the dependencies and start a local server run:
 
 ```bash
-npx thirdweb create --template vite-typescript-starter
+yarn install
+yarn dev
 ```
 
-You can start editing the page by modifying `src/main.tsx`. The page auto-updates as you edit the file.
+### Deployment
+The API url to the artis-server is stored as an environement variable in the `vite.config.js` file. This url must be in sync with the organization variable in order to reach the newest deployed API version.
 
-On `src/index.tsx`, you'll find our `ThirdwebProvider` wrapping your app, this is necessary for our [hooks](https://portal.thirdweb.com/react) and
-[UI Components](https://portal.thirdweb.com/ui-components) to work.
-
-### Deploy to IPFS
-
-Deploy a copy of your application to IPFS using the following command:
+To build and deploy a new version of the web app run:
 
 ```bash
-yarn deploy
+npm run build
+git add dist -f
+git commit -m "new frontend build"
+git subtree push --prefix dist origin gh-pages
 ```
 
 ## Learn More
-
-To learn more about thirdweb, Vite and React, take a look at the following resources:
-
-- [thirdweb React Documentation](https://docs.thirdweb.com/react) - learn about our React SDK.
-- [thirdweb TypeScript Documentation](https://docs.thirdweb.com/react) - learn about our JavaScript/TypeScript SDK.
-- [thirdweb Portal](https://docs.thirdweb.com/react) - check our guides and development resources.
-- [Vite Documentation](https://vitejs.dev/guide/) - learn about Vite features.
-- [React documentation](https://reactjs.org/) - learn React.
-
-You can check out [the thirdweb GitHub organization](https://github.com/thirdweb-dev) - your feedback and contributions are welcome!
-
-## Join our Discord!
-
-For any questions, suggestions, join our discord at [https://discord.gg/thirdweb](https://discord.gg/thirdweb).
+If you want to know more about the project check out the full project report in the [artis-thesis](https://github.com/artis-project/artis-thesis) repository
