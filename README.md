@@ -23,5 +23,7 @@ git commit -m "new frontend build"
 git subtree push --prefix dist origin gh-pages
 ```
 
+Note: Some might run into a memory error when running vite build, a temporary workaround can be found [here](https://github.com/vitejs/vite/issues/2433).
+
 ## Learn More
 If you want to know more about the project check out the full project report in the [artis-thesis](https://github.com/artis-project/artis-thesis) repository
