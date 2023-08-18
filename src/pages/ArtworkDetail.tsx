@@ -1,4 +1,4 @@
-import { Alignment, Button, FormGroup, HTMLSelect, InputGroup, Intent, Switch, Tag } from '@blueprintjs/core';
+import { Alignment, Button, FormGroup, HTMLSelect, InputGroup, Intent, Spinner, Switch, Tag } from '@blueprintjs/core';
 import { useUser } from '@thirdweb-dev/react';
 import { useState } from 'react';
 import { useLoaderData, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -76,6 +76,7 @@ export default function ArtworkDetail() {
     });
     console.log(newArtworkData);
     setLoading(true);
+    setEditMode(false);
     setArtworkData(await api.updateArtworkById(id!, newArtworkData.toDTO()));
     setLoading(false);
   };
@@ -113,128 +114,132 @@ export default function ArtworkDetail() {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => toggleEditMode(e.target.checked)}
           />
         </div>
-        <div>
-          <FormGroup label="Owner">
-            <Tag
-              //intent={Intent.PRIMARY}
-              large={true}
-              fill={true}
-            >
-              {artworkData.owner}
-            </Tag>
-          </FormGroup>
-          <>
-            {(!editMode || (editMode && user?.address === artworkData.owner)) && (
-              <div>
-                <FormGroup label="Object ID">
-                  <InputGroup
-                    inputClassName={editMode ? '' : 'bg-gray-400'}
-                    readOnly={!editMode}
-                    value={editMode ? newArtworkData.objectId : artworkData.objectId}
-                    name="objectId"
-                    onChange={handleInputChange}
-                  />
-                </FormGroup>
-                {/* Actors Field */}
-                <FormGroup
-                  label="Actors"
-                  helperText={actorsProps.helperText && 'Must be a valid ethereum address 0x...'}
-                  intent={actorsProps.intent}
-                  labelFor="actors"
-                >
-                  <div className="space-y-2">
-                    {['logger', 'recipient', 'carrier'].map((actor) => (
-                      <InputGroup
-                        readOnly={!editMode}
-                        inputClassName={editMode ? '' : 'bg-gray-400'}
-                        key={actor}
-                        type="text"
-                        value={editMode ? newArtworkData[actor] : artworkData[actor]}
-                        leftElement={
-                          <Tag round={true} minimal={true} intent={actorsProps[actor].intent}>
-                            {actor}
-                          </Tag>
-                        }
-                        id={actor}
-                        onChange={(e) => handleActor(e, actor)}
-                      />
-                    ))}
-                  </div>
-                </FormGroup>
-              </div>
-            )}
-          </>
-          <div className="flex space-x-4">
-            <FormGroup label={editMode ? 'Approve Status' : 'Requested Status'} labelFor="status">
-              {!editMode ? (
-                <Tag intent={Intent.WARNING} large={true}>
-                  {artworkData.status?.requestedStatus}
-                </Tag>
-              ) : (
-                <div className="flex space-x-3 justify-center items-center">
-                  {artworkData.status?.requestedStatus !== 'NONE' && (
-                    <>
-                      <div>
-                        <Switch
-                          large={true}
-                          onChange={(e) => setStatusApproval((e.target as HTMLInputElement).checked)}
-                          labelElement={
-                            <Tag intent={statusApproval ? Intent.SUCCESS : Intent.WARNING} large={false}>
-                              {artworkData.status?.requestedStatus}
+        {!loading ? (
+          <div>
+            <FormGroup label="Owner">
+              <Tag
+                //intent={Intent.PRIMARY}
+                large={true}
+                fill={true}
+              >
+                {artworkData.owner}
+              </Tag>
+            </FormGroup>
+            <>
+              {(!editMode || (editMode && user?.address === artworkData.owner)) && (
+                <div>
+                  <FormGroup label="Object ID">
+                    <InputGroup
+                      inputClassName={editMode ? '' : 'bg-gray-400'}
+                      readOnly={!editMode}
+                      value={editMode ? newArtworkData.objectId : artworkData.objectId}
+                      name="objectId"
+                      onChange={handleInputChange}
+                    />
+                  </FormGroup>
+                  {/* Actors Field */}
+                  <FormGroup
+                    label="Actors"
+                    helperText={actorsProps.helperText && 'Must be a valid ethereum address 0x...'}
+                    intent={actorsProps.intent}
+                    labelFor="actors"
+                  >
+                    <div className="space-y-2">
+                      {['logger', 'recipient', 'carrier'].map((actor) => (
+                        <InputGroup
+                          readOnly={!editMode}
+                          inputClassName={editMode ? '' : 'bg-gray-400'}
+                          key={actor}
+                          type="text"
+                          value={editMode ? newArtworkData[actor] : artworkData[actor]}
+                          leftElement={
+                            <Tag round={true} minimal={true} intent={actorsProps[actor].intent}>
+                              {actor}
                             </Tag>
                           }
+                          id={actor}
+                          onChange={(e) => handleActor(e, actor)}
                         />
-                      </div>
-                      <div className="p-1">
-                        <p>or</p>
-                      </div>
-                    </>
-                  )}
-                  <HTMLSelect
-                    id="status"
-                    options={['change requested status', 'IN_TRANSIT', 'TO_BE_DELIVERED', 'DELIVERED'].filter((e) => {
-                      return e !== artworkData.status?.requestedStatus;
-                    })}
-                    onChange={(e) =>
-                      setNewArtworkData(
-                        (prev) =>
-                          new ArtworkData({
-                            ...prev,
-                            status: { ...prev.status, requestedStatus: e.target.value },
-                          }),
-                      )
-                    }
-                  />
+                      ))}
+                    </div>
+                  </FormGroup>
                 </div>
               )}
-            </FormGroup>
-            {!editMode && !Object.values(artworkData.status!.approvals!).every((value) => !value) && (
-              <FormGroup label="Approved By">
-                <div className="space-x-2">
-                  {Object.entries(artworkData.status!.approvals!).map(([key, value]) => {
-                    if (value) {
-                      return (
-                        <Tag intent={Intent.SUCCESS} key={key}>
-                          {key}
-                        </Tag>
-                      );
-                    }
-                  })}
-                </div>
+            </>
+            <div className="flex space-x-4">
+              <FormGroup label={editMode ? 'Approve Status' : 'Requested Status'} labelFor="status">
+                {!editMode ? (
+                  <Tag intent={Intent.WARNING} large={true}>
+                    {artworkData.status?.requestedStatus}
+                  </Tag>
+                ) : (
+                  <div className="flex space-x-3 justify-center items-center">
+                    {artworkData.status?.requestedStatus !== 'NONE' && (
+                      <>
+                        <div>
+                          <Switch
+                            large={true}
+                            onChange={(e) => setStatusApproval((e.target as HTMLInputElement).checked)}
+                            labelElement={
+                              <Tag intent={statusApproval ? Intent.SUCCESS : Intent.WARNING} large={false}>
+                                {artworkData.status?.requestedStatus}
+                              </Tag>
+                            }
+                          />
+                        </div>
+                        <div className="p-1">
+                          <p>or</p>
+                        </div>
+                      </>
+                    )}
+                    <HTMLSelect
+                      id="status"
+                      options={['change requested status', 'IN_TRANSIT', 'TO_BE_DELIVERED', 'DELIVERED'].filter((e) => {
+                        return e !== artworkData.status?.requestedStatus;
+                      })}
+                      onChange={(e) =>
+                        setNewArtworkData(
+                          (prev) =>
+                            new ArtworkData({
+                              ...prev,
+                              status: { ...prev.status, requestedStatus: e.target.value },
+                            }),
+                        )
+                      }
+                    />
+                  </div>
+                )}
               </FormGroup>
+              {!editMode && !Object.values(artworkData.status!.approvals!).every((value) => !value) && (
+                <FormGroup label="Approved By">
+                  <div className="space-x-2">
+                    {Object.entries(artworkData.status!.approvals!).map(([key, value]) => {
+                      if (value) {
+                        return (
+                          <Tag intent={Intent.SUCCESS} key={key}>
+                            {key}
+                          </Tag>
+                        );
+                      }
+                    })}
+                  </div>
+                </FormGroup>
+              )}
+            </div>
+            {editMode && (
+              <div className="space-y-3">
+                <Button intent={Intent.PRIMARY} fill={true} onClick={handleSubmit}>
+                  Submit
+                </Button>
+                <Button intent={Intent.DANGER} fill={true} outlined={true} onClick={() => toggleEditMode(false)}>
+                  Cancel
+                </Button>
+              </div>
             )}
           </div>
-          {editMode && (
-            <div className="space-y-3">
-              <Button intent={Intent.PRIMARY} fill={true} onClick={handleSubmit}>
-                Submit
-              </Button>
-              <Button intent={Intent.DANGER} fill={true} outlined={true} onClick={() => toggleEditMode(false)}>
-                Cancel
-              </Button>
-            </div>
-          )}
-        </div>
+        ) : (
+          <Spinner />
+        )}
         <Button
           className="mt-5"
           style={{ color: 'white' }}
